@@ -1,0 +1,195 @@
+{
+	"info": {
+		"_postman_id": "e8bd28c5-ae03-4a8f-b879-3c37b002df35",
+		"name": "PhotoAlbums",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GetAllPhotos",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "4b24923e-c726-4f23-b22c-a6dd696c488c",
+						"exec": [
+							"pm.environment.set(\"Server_Uri\", \"https://localhost:44307/v1\");"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "df6f5a6c-b939-40e3-8851-2a37e17f8895",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Contains photos\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.length).to.be.above(0);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{Server_Uri}}/photos",
+					"host": [
+						"{{Server_Uri}}"
+					],
+					"path": [
+						"photos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetPhotosByUserId",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "4b24923e-c726-4f23-b22c-a6dd696c488c",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "df6f5a6c-b939-40e3-8851-2a37e17f8895",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Contains photos\", function () {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.length).to.be.above(0);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{Server_Uri}}/photos?userid=1",
+					"host": [
+						"{{Server_Uri}}"
+					],
+					"path": [
+						"photos"
+					],
+					"query": [
+						{
+							"key": "userid",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetPhotos for not existing user",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "4b24923e-c726-4f23-b22c-a6dd696c488c",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "df6f5a6c-b939-40e3-8851-2a37e17f8895",
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {",
+							"    pm.response.to.be.notFound;",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{Server_Uri}}/photos?userid=0",
+					"host": [
+						"{{Server_Uri}}"
+					],
+					"path": [
+						"photos"
+					],
+					"query": [
+						{
+							"key": "userid",
+							"value": "0"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

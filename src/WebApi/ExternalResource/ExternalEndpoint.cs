@@ -6,8 +6,6 @@ namespace PhotoAlbum.WebApi.ExternalResource
 	{
 		public Uri BaseAddress { get; set; }
 
-		public string AuthorizationToken { get; set; }
-
 		public TimeSpan Timeout { get; set; }
 	}
 }

@@ -3,12 +3,14 @@ namespace PhotoAlbum.WebApi.Infrastructure.Extensions
 	using AutoMapper;
 	using Microsoft.AspNetCore.Mvc;
 	using Microsoft.AspNetCore.Mvc.ApiExplorer;
+	using Microsoft.Extensions.Configuration;
 	using Microsoft.Extensions.DependencyInjection;
 	using Microsoft.Extensions.Options;
 	using MoreLinq;
 	using Newtonsoft.Json.Converters;
 	using PhotoAlbum.WebApi.ExternalResource;
 	using PhotoAlbum.WebApi.ExternalResource.HttpClients;
+	using PhotoAlbum.WebApi.Services;
 	using Swashbuckle.AspNetCore.Swagger;
 	using System;
 	using System.Linq;
@@ -16,11 +18,21 @@ namespace PhotoAlbum.WebApi.Infrastructure.Extensions
 
 	public static class ServiceExtensions
 	{
+		public static IServiceCollection RegisterConfigurations(
+			this IServiceCollection services,
+			IConfiguration config)
+		{
+			return services
+				.Configure<ExternalEndpoint>(
+					config.GetSection("ExternalEndpoint"));
+		}
+
 		public static IServiceCollection RegisterServices(
 			this IServiceCollection services)
 		{
 			return services
 				.AddAutoMapper(typeof(ServiceExtensions))
+				.AddTransient<PhotoService>()
 				.AddHttpClients();
 		}
 

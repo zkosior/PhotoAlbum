@@ -4,7 +4,7 @@ namespace PhotoAlbum.WebApi.ExternalResource.HttpClients
 	using System.Collections.Generic;
 	using System.Threading.Tasks;
 
-	internal interface IExternalClient
+	public interface IExternalClient
 	{
 		Task<List<Photo>> GetPhotos();
 

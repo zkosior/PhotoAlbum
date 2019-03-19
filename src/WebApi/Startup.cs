@@ -24,6 +24,7 @@ namespace PhotoAlbum.WebApi
 		{
 			services
 				.AddSingleton(Log.Logger)
+				.RegisterConfigurations(this.Configuration)
 				.RegisterServices()
 				.AddMvcWithDefaults()
 				.AddHealthChecks();

@@ -22,7 +22,6 @@ namespace PhotoAlbum.Tests.WebApi
 		: IClassFixture<WebApplicationFactory<Startup>>
 	{
 		private readonly HttpClient client;
-		private readonly WebApplicationFactory<Startup> webApi;
 		private readonly WireMockFixture wiremock;
 
 		public GetPhotosTests(

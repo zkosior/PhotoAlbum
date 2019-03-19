@@ -17,20 +17,43 @@ namespace PhotoAlbum.WebApi.Services
 
 		public async Task<List<Photo>> GetAllPhotos()
 		{
-			return
-				(from album in await this.client.GetAlbums()
-				 join photo in await this.client.GetPhotos()
-					 on album.Id equals photo.AlbumId
-				 select new Photo
-				 {
-					 UserId = album.UserId,
-					 AlbumId = album.Id,
-					 PhotoId = photo.Id,
-					 AlbumTitle = album.Title,
-					 PhotoTitle = photo.Title,
-					 Url = photo.Url,
-					 ThumbnailUrl = photo.ThumbnailUrl,
-				 }).ToList();
+			return MatchPhotosToAlbums(
+				await this.client.GetAlbums(),
+				await this.client.GetPhotos());
+		}
+
+		public async Task<List<Photo>> GetPhotosByUserId(int userId)
+		{
+			var albums = await this.client.GetAlbumsByUserId(userId);
+			if (albums.Count == 0)
+			{
+				return null; // just an example of handling nulls. it could as well return empty collection
+			}
+
+			var photos = (await Task.WhenAll(
+				from a in albums
+				select this.client.GetPhotosByAlbumId(a.Id)))
+				.SelectMany(p => p);
+			return MatchPhotosToAlbums(albums, photos);
+		}
+
+		private static List<Photo> MatchPhotosToAlbums(
+			IEnumerable<ExternalResource.Models.Album> albums,
+			IEnumerable<ExternalResource.Models.Photo> photos)
+		{
+			return (from album in albums
+					join photo in photos
+						on album.Id equals photo.AlbumId
+					select new Photo
+					{
+						UserId = album.UserId,
+						AlbumId = album.Id,
+						PhotoId = photo.Id,
+						AlbumTitle = album.Title,
+						PhotoTitle = photo.Title,
+						Url = photo.Url,
+						ThumbnailUrl = photo.ThumbnailUrl,
+					}).ToList();
 		}
 	}
 }

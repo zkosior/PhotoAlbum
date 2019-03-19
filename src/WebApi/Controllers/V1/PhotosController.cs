@@ -2,6 +2,7 @@ namespace PhotoAlbum.WebApi.Controllers.V1
 {
 	using Microsoft.AspNetCore.Mvc;
 	using PhotoAlbum.WebApi.Contracts.V1;
+	using PhotoAlbum.WebApi.Infrastructure.Filters;
 	using PhotoAlbum.WebApi.Services;
 	using System.Collections.Generic;
 	using System.Threading.Tasks;
@@ -19,10 +20,13 @@ namespace PhotoAlbum.WebApi.Controllers.V1
 			this.service = service;
 		}
 
+		[NotFoundResultFilter]
 		[HttpGet("photos")]
-		public async Task<ActionResult<IEnumerable<Photo>>> GetPhotos()
+		public async Task<ActionResult<IEnumerable<Photo>>> GetPhotos(int? userId)
 		{
-			return await this.service.GetAllPhotos();
+			return userId.HasValue
+				? await this.service.GetPhotosByUserId(userId.Value)
+				: await this.service.GetAllPhotos();
 		}
 	}
 }

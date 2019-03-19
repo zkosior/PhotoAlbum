@@ -1,10 +1,12 @@
 namespace PhotoAlbum.Tests.Services
 {
 	using AutoFixture.Xunit2;
+	using AutoMapper;
 	using FluentAssertions;
 	using NSubstitute;
 	using PhotoAlbum.WebApi.ExternalResource.HttpClients;
 	using PhotoAlbum.WebApi.ExternalResource.Models;
+	using PhotoAlbum.WebApi.Mapping;
 	using PhotoAlbum.WebApi.Services;
 	using System.Collections.Generic;
 	using System.Linq;
@@ -16,6 +18,8 @@ namespace PhotoAlbum.Tests.Services
 	{
 		private readonly IExternalClient client =
 			Substitute.For<IExternalClient>();
+
+		private readonly IMapper mapper = CreateMapper();
 
 		[Theory]
 		[AutoData]
@@ -43,7 +47,8 @@ namespace PhotoAlbum.Tests.Services
 				}
 			});
 
-			var result = await new PhotoService(this.client).GetAllPhotos();
+			var result = await new PhotoService(this.client, this.mapper)
+				.GetAllPhotos();
 			result.Should().HaveCount(1);
 			result.Single().Should().BeEquivalentTo(response);
 		}
@@ -59,7 +64,8 @@ namespace PhotoAlbum.Tests.Services
 			this.client.GetAlbums().Returns(new List<Album> { album });
 			this.client.GetPhotos().Returns(new List<Photo> { photo });
 
-			var result = await new PhotoService(this.client).GetAllPhotos();
+			var result = await new PhotoService(this.client, this.mapper)
+				.GetAllPhotos();
 			result.Should().BeEmpty();
 		}
 
@@ -69,8 +75,16 @@ namespace PhotoAlbum.Tests.Services
 			this.client.GetAlbums().Returns(new List<Album>());
 			this.client.GetPhotos().Returns(new List<Photo>());
 
-			var result = await new PhotoService(this.client).GetAllPhotos();
+			var result = await new PhotoService(this.client, this.mapper)
+				.GetAllPhotos();
 			result.Should().BeEmpty();
+		}
+
+		private static IMapper CreateMapper()
+		{
+			return new MapperConfiguration(
+					mc => mc.AddProfile(new MapperProfile()))
+				.CreateMapper();
 		}
 	}
 }

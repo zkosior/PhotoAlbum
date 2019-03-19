@@ -1,17 +1,18 @@
 namespace PhotoAlbum.WebApi.ExternalResource.HttpClients
 {
 	using PhotoAlbum.WebApi.ExternalResource.Models;
+	using PhotoAlbum.WebApi.Infrastructure.Failure;
 	using System.Collections.Generic;
 	using System.Threading.Tasks;
 
 	public interface IExternalClient
 	{
-		Task<List<Photo>> GetPhotos();
+		Task<Either<List<Photo>, ErrorResponse>> GetPhotos();
 
-		Task<List<Photo>> GetPhotosByAlbumId(int albumId);
+		Task<Either<List<Photo>, ErrorResponse>> GetPhotosByAlbumId(int albumId);
 
-		Task<List<Album>> GetAlbums();
+		Task<Either<List<Album>, ErrorResponse>> GetAlbums();
 
-		Task<List<Album>> GetAlbumsByUserId(int userId);
+		Task<Either<List<Album>, ErrorResponse>> GetAlbumsByUserId(int userId);
 	}
 }

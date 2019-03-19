@@ -1,7 +1,9 @@
 namespace PhotoAlbum.WebApi.ExternalResource.HttpClients
 {
 	using PhotoAlbum.WebApi.ExternalResource.Models;
+	using PhotoAlbum.WebApi.Infrastructure.Failure;
 	using System.Collections.Generic;
+	using System.Net;
 	using System.Net.Http;
 	using System.Runtime.Serialization.Json;
 	using System.Threading.Tasks;
@@ -15,7 +17,7 @@ namespace PhotoAlbum.WebApi.ExternalResource.HttpClients
 			this.client = client;
 		}
 
-		public async Task<List<Album>> GetAlbums()
+		public async Task<Either<List<Album>, ErrorResponse>> GetAlbums()
 		{
 			var url = "albums";
 
@@ -23,21 +25,31 @@ namespace PhotoAlbum.WebApi.ExternalResource.HttpClients
 			var albums = serializer.ReadObject(
 				await this.client.GetStreamAsync(url)) as List<Album>;
 
-			return albums;
+			return Either<List<Album>, ErrorResponse>.Success(albums);
 		}
 
-		public async Task<List<Album>> GetAlbumsByUserId(int userId)
+		public async Task<Either<List<Album>, ErrorResponse>> GetAlbumsByUserId(int userId)
 		{
+			if (userId < 0)
+			{
+				return Either<List<Album>, ErrorResponse>.Failure(
+					new ErrorResponse
+					{
+						StatusCode = HttpStatusCode.InternalServerError,
+						Message = "UserId cannot be negative.",
+					});
+			}
+
 			var url = $"albums?userId={userId}";
 
 			var serializer = new DataContractJsonSerializer(typeof(List<Album>));
 			var albums = serializer.ReadObject(
 				await this.client.GetStreamAsync(url)) as List<Album>;
 
-			return albums;
+			return Either<List<Album>, ErrorResponse>.Success(albums);
 		}
 
-		public async Task<List<Photo>> GetPhotos()
+		public async Task<Either<List<Photo>, ErrorResponse>> GetPhotos()
 		{
 			var url = "photos";
 
@@ -45,10 +57,10 @@ namespace PhotoAlbum.WebApi.ExternalResource.HttpClients
 			var photos = serializer.ReadObject(
 				await this.client.GetStreamAsync(url)) as List<Photo>;
 
-			return photos;
+			return Either<List<Photo>, ErrorResponse>.Success(photos);
 		}
 
-		public async Task<List<Photo>> GetPhotosByAlbumId(int albumId)
+		public async Task<Either<List<Photo>, ErrorResponse>> GetPhotosByAlbumId(int albumId)
 		{
 			var url = $"photos?albumId={albumId}";
 
@@ -56,7 +68,7 @@ namespace PhotoAlbum.WebApi.ExternalResource.HttpClients
 			var photos = serializer.ReadObject(
 				await this.client.GetStreamAsync(url)) as List<Photo>;
 
-			return photos;
+			return Either<List<Photo>, ErrorResponse>.Success(photos);
 		}
 	}
 }

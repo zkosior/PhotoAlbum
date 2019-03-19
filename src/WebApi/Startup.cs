@@ -40,6 +40,7 @@ namespace PhotoAlbum.WebApi
 				{
 					Predicate = _ => true,
 					ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
+					//// I could add deep check for external endpoint
 				})
 				.UseInternalErrorHandlers()
 				.UseSwaggerWithVersioning(provider)

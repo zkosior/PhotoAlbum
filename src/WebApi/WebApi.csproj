@@ -15,6 +15,7 @@
     <NoWarn>1701;1702;1591</NoWarn>
     <DebugSymbols>True</DebugSymbols>
     <DebugType>Full</DebugType>
+    <UserSecretsId>92ac30c5-3dfa-4c88-bf8e-c35900fcadeb</UserSecretsId>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

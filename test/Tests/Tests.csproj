@@ -11,6 +11,7 @@
     <LangVersion>latest</LangVersion>
     <DebugSymbols>True</DebugSymbols>
     <DebugType>Full</DebugType>
+    <UserSecretsId>56df2888-a43a-4462-8196-eC87ec403c02</UserSecretsId>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

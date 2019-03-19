@@ -4,17 +4,24 @@ namespace PhotoAlbum.WebApi.Infrastructure.Extensions
 	using Microsoft.AspNetCore.Mvc;
 	using Microsoft.AspNetCore.Mvc.ApiExplorer;
 	using Microsoft.Extensions.DependencyInjection;
+	using Microsoft.Extensions.Options;
 	using MoreLinq;
 	using Newtonsoft.Json.Converters;
+	using PhotoAlbum.WebApi.ExternalResource;
+	using PhotoAlbum.WebApi.ExternalResource.HttpClients;
 	using Swashbuckle.AspNetCore.Swagger;
+	using System;
 	using System.Linq;
+	using System.Net.Http;
 
 	public static class ServiceExtensions
 	{
-		public static IServiceCollection RegisterServices(this IServiceCollection services)
+		public static IServiceCollection RegisterServices(
+			this IServiceCollection services)
 		{
-			services.AddAutoMapper(typeof(ServiceExtensions));
-			return services;
+			return services
+				.AddAutoMapper(typeof(ServiceExtensions))
+				.AddHttpClients();
 		}
 
 		public static IServiceCollection AddMvcWithDefaults(
@@ -82,7 +89,7 @@ namespace PhotoAlbum.WebApi.Infrastructure.Extensions
 			ApiVersionDescription description,
 			string swaggerPageTitle)
 		{
-			Info info = new Info
+			var info = new Info
 			{
 				Title = swaggerPageTitle,
 				Version = description.ApiVersion.ToString()
@@ -93,6 +100,25 @@ namespace PhotoAlbum.WebApi.Infrastructure.Extensions
 			}
 
 			return info;
+		}
+
+		private static IServiceCollection AddHttpClients(
+			this IServiceCollection services)
+		{
+			services.AddHttpClient<IExternalClient, ExternalClient>(ConfigureHttpClient);
+
+			return services;
+		}
+
+		private static void ConfigureHttpClient(
+			IServiceProvider services,
+			HttpClient client)
+		{
+			var httpClientOptions = services
+				.GetRequiredService<IOptions<ExternalEndpoint>>()
+				.Value;
+			client.BaseAddress = httpClientOptions.BaseAddress;
+			client.Timeout = httpClientOptions.Timeout;
 		}
 	}
 }

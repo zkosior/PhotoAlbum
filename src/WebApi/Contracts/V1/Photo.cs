@@ -1,5 +1,7 @@
 namespace PhotoAlbum.WebApi.Contracts.V1
 {
+	using System;
+
 	public class Photo
 	{
 		public int UserId { get; set; }
@@ -12,11 +14,8 @@ namespace PhotoAlbum.WebApi.Contracts.V1
 
 		public string PhotoTitle { get; set; }
 
-#pragma warning disable CA1056 // Uri properties should not be strings
+		public Uri Url { get; set; }
 
-		public string Url { get; set; }
-
-		public string ThumbnailUrl { get; set; }
-#pragma warning restore CA1056 // Uri properties should not be strings
+		public Uri ThumbnailUrl { get; set; }
 	}
 }

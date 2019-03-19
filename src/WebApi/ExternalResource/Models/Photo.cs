@@ -1,8 +1,7 @@
 namespace PhotoAlbum.WebApi.ExternalResource.Models
 {
+	using System;
 	using System.Runtime.Serialization;
-
-#pragma warning disable CA1056 // Uri properties should not be strings
 
 	[DataContract]
 	public class Photo
@@ -17,11 +16,9 @@ namespace PhotoAlbum.WebApi.ExternalResource.Models
 		public string Title { get; set; }
 
 		[DataMember(Name = "url")]
-		public string Url { get; set; }
+		public Uri Url { get; set; }
 
 		[DataMember(Name = "thumbnailUrl")]
-		public string ThumbnailUrl { get; set; }
+		public Uri ThumbnailUrl { get; set; }
 	}
-
-#pragma warning restore CA1056 // Uri properties should not be strings
 }

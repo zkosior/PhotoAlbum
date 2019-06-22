@@ -15,28 +15,26 @@ namespace PhotoAlbum.WebApi.Infrastructure.Failure
 		private interface IEither
 		{
 			T Match<T>(Func<TL, T> onLeft, Func<TR, T> onRight);
-
-			//Task<T> Match<T>(Func<TL, Task<T>> onLeft, Func<TR, Task<T>> onRight);
 		}
 
-		public static Either<TL, TR> Success(TL value)
+		public static implicit operator Either<TL, TR>(TL item)
 		{
-			return CreateLeft(value);
+			return CreateLeft(item);
 		}
 
-		public static Either<TL, TR> Failure(TR value)
+		public static implicit operator Either<TL, TR>(TR item)
 		{
-			return CreateRight(value);
+			return CreateRight(item);
 		}
 
-		//public Either<T, TR> ContinueOnSuccess<T>(Func<TL, Either<T, TR>> function)
+		//public static Either<TL, TR> Success(TL value)
 		//{
-		//	return this.Match(function, Either<T, TR>.CreateRight);
+		//	return CreateLeft(value);
 		//}
 
-		//public Task<Either<T, TR>> ContinueOnSuccess<T>(Func<TL, Task<Either<T, TR>>> function)
+		//public static Either<TL, TR> Failure(TR value)
 		//{
-		//	return this.Match(function, x => Task.FromResult(Either<T, TR>.CreateRight(x)));
+		//	return CreateRight(value);
 		//}
 
 		internal static Either<TL, TR> CreateLeft(TL value)
@@ -53,11 +51,6 @@ namespace PhotoAlbum.WebApi.Infrastructure.Failure
 		{
 			return this.imp.Match(onLeft, onRight);
 		}
-
-		//public Task<T> Match<T>(Func<TL, Task<T>> onLeft, Func<TR, Task<T>> onRight)
-		//{
-		//	return this.imp.Match(onLeft, onRight);
-		//}
 
 		public override bool Equals(object obj)
 		{
@@ -87,11 +80,6 @@ namespace PhotoAlbum.WebApi.Infrastructure.Failure
 			{
 				return onLeft(this.left);
 			}
-
-			//public Task<T> Match<T>(Func<TL, Task<T>> onLeft, Func<TR, Task<T>> onRight)
-			//{
-			//	return onLeft(this.left);
-			//}
 
 			public override bool Equals(object obj)
 			{
@@ -123,11 +111,6 @@ namespace PhotoAlbum.WebApi.Infrastructure.Failure
 				return onRight(this.right);
 			}
 
-			//public Task<T> Match<T>(Func<TL, Task<T>> onLeft, Func<TR, Task<T>> onRight)
-			//{
-			//	return onRight(this.right);
-			//}
-
 			public override bool Equals(object obj)
 			{
 				if (!(obj is Right other))
@@ -152,6 +135,11 @@ namespace PhotoAlbum.WebApi.Infrastructure.Failure
 			Func<TL, Either<T, TR>> f) =>
 			item.Match(f, Either<T, TR>.CreateRight);
 
+		public static Either<T, TR> OnSuccess<TL, TR, T>(
+			this Either<TL, TR> item,
+			Func<TL, T> f) =>
+			item.Match(x => Either<T, TR>.CreateLeft(f(x)), Either<T, TR>.CreateRight);
+
 		public static async Task<Either<T, TR>> OnSuccess<TL, TR, T>(
 			this Either<TL, TR> item,
 			Func<TL, Task<Either<T, TR>>> f) =>
@@ -161,6 +149,11 @@ namespace PhotoAlbum.WebApi.Infrastructure.Failure
 			this Task<Either<TL, TR>> task,
 			Func<TL, Either<T, TR>> f) =>
 			(await task).Match(f, Either<T, TR>.CreateRight);
+
+		public static async Task<Either<T, TR>> OnSuccess<TL, TR, T>(
+			this Task<Either<TL, TR>> task,
+			Func<TL, T> f) =>
+			(await task).Match(x => Either<T, TR>.CreateLeft(f(x)), Either<T, TR>.CreateRight);
 
 		public static async Task<Either<T, TR>> OnSuccess<TL, TR, T>(
 			this Task<Either<TL, TR>> task,

@@ -26,8 +26,7 @@ namespace PhotoAlbum.WebApi.Services
 		{
 			return this.client.GetAlbums().OnSuccess(
 				albums => this.client.GetPhotos().OnSuccess(
-					photos => Either<List<Photo>, ErrorResponse>.Success(
-						this.MatchPhotosToAlbums(albums, photos))));
+					photos => this.MatchPhotosToAlbums(albums, photos)));
 		}
 
 		public Task<Either<List<Photo>, ErrorResponse>> GetPhotosByUserId(int userId)
@@ -38,12 +37,11 @@ namespace PhotoAlbum.WebApi.Services
 					if (albums.Count == 0)
 					{
 						// just an example of handling nulls. it could as well return empty collection
-						return Either<List<Photo>, ErrorResponse>.Failure(
-							new ErrorResponse
-							{
-								StatusCode = System.Net.HttpStatusCode.NotFound,
-								Message = "failure",
-							});
+						return new ErrorResponse
+						{
+							StatusCode = System.Net.HttpStatusCode.NotFound,
+							Message = "failure",
+						};
 					}
 
 					var photos = AggregatePhotos(
@@ -51,30 +49,30 @@ namespace PhotoAlbum.WebApi.Services
 							from a in albums
 							select this.client.GetPhotosByAlbumId(a.Id)));
 
-					return photos.OnSuccess(p =>
-					Either<List<Photo>, ErrorResponse>.Success(
-						this.MatchPhotosToAlbums(albums, p)));
+					return photos.OnSuccess(p => this.MatchPhotosToAlbums(albums, p));
 				});
 		}
 
 		private static Either<List<ExternalResource.Models.Photo>, ErrorResponse> AggregatePhotos(
 			Either<List<ExternalResource.Models.Photo>, ErrorResponse>[] photos)
 		{
-			return photos.Aggregate((m, n) =>
+			Either<List<ExternalResource.Models.Photo>, ErrorResponse> tmp = null;
+			foreach (var photo in photos)
 			{
-				var accumulator = new List<ExternalResource.Models.Photo>();
-				m.OnSuccess(o =>
+				if (tmp == null)
 				{
-					accumulator.AddRange(o);
-					return Either<List<ExternalResource.Models.Photo>, ErrorResponse>.Success(o);
-				});
-				n.OnSuccess(o =>
+					tmp = photo;
+					continue;
+				}
+
+				tmp = tmp.OnSuccess(p => photo.OnSuccess(q =>
 				{
-					accumulator.AddRange(o);
-					return Either<List<ExternalResource.Models.Photo>, ErrorResponse>.Success(o);
-				});
-				return Either<List<ExternalResource.Models.Photo>, ErrorResponse>.Success(accumulator);
-			});
+					p.AddRange(q);
+					return p;
+				}));
+			}
+
+			return tmp;
 		}
 
 		private List<Photo> MatchPhotosToAlbums(

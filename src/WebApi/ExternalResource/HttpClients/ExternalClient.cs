@@ -25,19 +25,18 @@ namespace PhotoAlbum.WebApi.ExternalResource.HttpClients
 			var albums = serializer.ReadObject(
 				await this.client.GetStreamAsync(url)) as List<Album>;
 
-			return Either<List<Album>, ErrorResponse>.Success(albums);
+			return albums;
 		}
 
 		public async Task<Either<List<Album>, ErrorResponse>> GetAlbumsByUserId(int userId)
 		{
 			if (userId < 0)
 			{
-				return Either<List<Album>, ErrorResponse>.Failure(
-					new ErrorResponse
-					{
-						StatusCode = HttpStatusCode.InternalServerError,
-						Message = "UserId cannot be negative.",
-					});
+				return new ErrorResponse
+				{
+					StatusCode = HttpStatusCode.InternalServerError,
+					Message = "UserId cannot be negative.",
+				};
 			}
 
 			var url = $"albums?userId={userId}";
@@ -46,7 +45,7 @@ namespace PhotoAlbum.WebApi.ExternalResource.HttpClients
 			var albums = serializer.ReadObject(
 				await this.client.GetStreamAsync(url)) as List<Album>;
 
-			return Either<List<Album>, ErrorResponse>.Success(albums);
+			return albums;
 		}
 
 		public async Task<Either<List<Photo>, ErrorResponse>> GetPhotos()
@@ -57,7 +56,7 @@ namespace PhotoAlbum.WebApi.ExternalResource.HttpClients
 			var photos = serializer.ReadObject(
 				await this.client.GetStreamAsync(url)) as List<Photo>;
 
-			return Either<List<Photo>, ErrorResponse>.Success(photos);
+			return photos;
 		}
 
 		public async Task<Either<List<Photo>, ErrorResponse>> GetPhotosByAlbumId(int albumId)
@@ -68,7 +67,7 @@ namespace PhotoAlbum.WebApi.ExternalResource.HttpClients
 			var photos = serializer.ReadObject(
 				await this.client.GetStreamAsync(url)) as List<Photo>;
 
-			return Either<List<Photo>, ErrorResponse>.Success(photos);
+			return photos;
 		}
 	}
 }

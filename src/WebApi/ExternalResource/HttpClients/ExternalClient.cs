@@ -8,6 +8,7 @@ namespace PhotoAlbum.WebApi.ExternalResource.HttpClients
 	using System.Runtime.Serialization.Json;
 	using System.Threading.Tasks;
 
+#pragma warning disable CA2234 // Pass system uri objects instead of strings
 	public class ExternalClient : IExternalClient
 	{
 		private readonly HttpClient client;
@@ -17,57 +18,33 @@ namespace PhotoAlbum.WebApi.ExternalResource.HttpClients
 			this.client = client;
 		}
 
-		public async Task<Either<List<Album>, ErrorResponse>> GetAlbums()
-		{
-			var url = "albums";
+		public async Task<Either<List<Album>, ErrorResponse>> GetAlbums() =>
+			new DataContractJsonSerializer(typeof(List<Album>)).ReadObject(
+				await this.client.GetStreamAsync("albums")) as List<Album>;
 
-			var serializer = new DataContractJsonSerializer(typeof(List<Album>));
-			var albums = serializer.ReadObject(
-				await this.client.GetStreamAsync(url)) as List<Album>;
+		public async Task<Either<List<Photo>, ErrorResponse>> GetPhotos() =>
+			new DataContractJsonSerializer(typeof(List<Photo>)).ReadObject(
+				await this.client.GetStreamAsync("photos")) as List<Photo>;
 
-			return albums;
-		}
+		public async Task<Either<List<Photo>, ErrorResponse>> GetPhotosByAlbumId(int albumId) =>
+			new DataContractJsonSerializer(typeof(List<Photo>)).ReadObject(
+				await this.client.GetStreamAsync($"photos?albumId={albumId}")) as List<Photo>;
 
-		public async Task<Either<List<Album>, ErrorResponse>> GetAlbumsByUserId(int userId)
-		{
-			if (userId < 0)
+		public async Task<Either<List<Album>, ErrorResponse>> GetAlbumsByUserId(int userId) =>
+			userId < 0
+				? IncorrectUserId()
+				: await this.GetAlbumsForUser(userId);
+
+		private static Either<List<Album>, ErrorResponse> IncorrectUserId() =>
+			new ErrorResponse
 			{
-				return new ErrorResponse
-				{
-					StatusCode = HttpStatusCode.InternalServerError,
-					Message = "UserId cannot be negative.",
-				};
-			}
+				StatusCode = HttpStatusCode.InternalServerError,
+				Message = "UserId cannot be negative.",
+			};
 
-			var url = $"albums?userId={userId}";
-
-			var serializer = new DataContractJsonSerializer(typeof(List<Album>));
-			var albums = serializer.ReadObject(
-				await this.client.GetStreamAsync(url)) as List<Album>;
-
-			return albums;
-		}
-
-		public async Task<Either<List<Photo>, ErrorResponse>> GetPhotos()
-		{
-			var url = "photos";
-
-			var serializer = new DataContractJsonSerializer(typeof(List<Photo>));
-			var photos = serializer.ReadObject(
-				await this.client.GetStreamAsync(url)) as List<Photo>;
-
-			return photos;
-		}
-
-		public async Task<Either<List<Photo>, ErrorResponse>> GetPhotosByAlbumId(int albumId)
-		{
-			var url = $"photos?albumId={albumId}";
-
-			var serializer = new DataContractJsonSerializer(typeof(List<Photo>));
-			var photos = serializer.ReadObject(
-				await this.client.GetStreamAsync(url)) as List<Photo>;
-
-			return photos;
-		}
+		private async Task<Either<List<Album>, ErrorResponse>> GetAlbumsForUser(int userId) =>
+			new DataContractJsonSerializer(typeof(List<Album>)).ReadObject(
+				await this.client.GetStreamAsync($"albums?userId={userId}")) as List<Album>;
 	}
+#pragma warning restore CA2234 // Pass system uri objects instead of strings
 }

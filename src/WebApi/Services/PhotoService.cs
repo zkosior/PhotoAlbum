@@ -22,36 +22,21 @@ namespace PhotoAlbum.WebApi.Services
 			this.mapper = mapper;
 		}
 
-		public Task<Either<List<Photo>, ErrorResponse>> GetAllPhotos()
-		{
-			return this.client.GetAlbums().OnSuccess(
+		public Task<Either<List<Photo>, ErrorResponse>> GetAllPhotos() =>
+			this.client.GetAlbums().OnSuccess(
 				albums => this.client.GetPhotos().OnSuccess(
 					photos => this.MatchPhotosToAlbums(albums, photos)));
-		}
 
-		public Task<Either<List<Photo>, ErrorResponse>> GetPhotosByUserId(int userId)
-		{
-			return this.client.GetAlbumsByUserId(userId).OnSuccess(async
-				albums =>
-				{
-					if (albums.Count == 0)
-					{
-						// just an example of handling nulls. it could as well return empty collection
-						return new ErrorResponse
-						{
-							StatusCode = System.Net.HttpStatusCode.NotFound,
-							Message = "failure",
-						};
-					}
+		public Task<Either<List<Photo>, ErrorResponse>> GetPhotosByUserId(int userId) =>
+			this.client.GetAlbumsByUserId(userId).OnSuccess(this.GetPhotosFromAlbum);
 
-					var photos = AggregatePhotos(
-						await Task.WhenAll(
-							from a in albums
-							select this.client.GetPhotosByAlbumId(a.Id)));
-
-					return photos.OnSuccess(p => this.MatchPhotosToAlbums(albums, p));
-				});
-		}
+		private static Either<List<Photo>, ErrorResponse> UserNotFound() =>
+			//// just an example of handling nulls. it could as well return empty collection
+			new ErrorResponse
+			{
+				StatusCode = System.Net.HttpStatusCode.NotFound,
+				Message = "failure",
+			};
 
 		private static Either<List<ExternalResource.Models.Photo>, ErrorResponse> AggregatePhotos(
 			Either<List<ExternalResource.Models.Photo>, ErrorResponse>[] photos)
@@ -75,16 +60,23 @@ namespace PhotoAlbum.WebApi.Services
 			return tmp;
 		}
 
+		private async Task<Either<List<Photo>, ErrorResponse>> GetPhotosFromAlbum(
+			List<ExternalResource.Models.Album> albums) =>
+				albums.Count == 0
+					? UserNotFound()
+					: AggregatePhotos(
+					await Task.WhenAll(
+						from a in albums
+						select this.client.GetPhotosByAlbumId(a.Id)))
+					.OnSuccess(p => this.MatchPhotosToAlbums(albums, p));
+
 		private List<Photo> MatchPhotosToAlbums(
 			IEnumerable<ExternalResource.Models.Album> albums,
-			IEnumerable<ExternalResource.Models.Photo> photos)
-		{
-			return
+			IEnumerable<ExternalResource.Models.Photo> photos) =>
 				(from album in albums
 				 join photo in photos
 					 on album.Id equals photo.AlbumId
 				 select this.mapper.Map<Photo>(Tuple.Create(album, photo))) // not the most efficient, but shows decoupling
 				.ToList();
-		}
 	}
 }

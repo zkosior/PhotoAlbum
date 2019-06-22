@@ -2,7 +2,9 @@ namespace PhotoAlbum.Tests.ExternalHttpClients
 {
 	using PhotoAlbum.Tests.Helpers;
 	using PhotoAlbum.WebApi.ExternalResource.HttpClients;
+	using PhotoAlbum.WebApi.ExternalResource.Models;
 	using PhotoAlbum.WebApi.Infrastructure.Failure;
+	using System.Collections.Generic;
 	using System.Net.Http;
 	using System.Threading.Tasks;
 	using Xunit;
@@ -31,8 +33,8 @@ namespace PhotoAlbum.Tests.ExternalHttpClients
 				Assert.NotEmpty(p);
 				Assert.NotEqual(0, p[0].Id);
 				Assert.NotNull(p[0].Title);
-				return (System.Collections.Generic.List<PhotoAlbum.WebApi.ExternalResource.Models.Album>)null;
-			});
+				return default(List<Album>);
+			}); // should also check for failure
 			//Assert.NotEmpty(albums);
 			//Assert.NotEqual(0, albums[0].Id);
 			//Assert.NotNull(albums[0].Title);
@@ -59,7 +61,7 @@ namespace PhotoAlbum.Tests.ExternalHttpClients
 				Assert.NotEmpty(p);
 				Assert.NotEqual(0, p[0].Id);
 				Assert.NotNull(p[0].Title);
-				return (System.Collections.Generic.List<PhotoAlbum.WebApi.ExternalResource.Models.Album>)null;
+				return default(List<Album>);
 			});
 			//Assert.NotEmpty(photos);
 			//Assert.NotEqual(0, photos[0].Id);
@@ -76,7 +78,7 @@ namespace PhotoAlbum.Tests.ExternalHttpClients
 				Assert.NotEmpty(p);
 				Assert.NotEqual(0, p[0].Id);
 				Assert.NotNull(p[0].Title);
-				return (System.Collections.Generic.List<PhotoAlbum.WebApi.ExternalResource.Models.Album>)null;
+				return default(List<Album>);
 			});
 			//Assert.NotEmpty(photos);
 			//Assert.NotEqual(0, photos[0].Id);

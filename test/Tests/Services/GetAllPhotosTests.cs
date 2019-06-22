@@ -49,17 +49,17 @@ namespace PhotoAlbum.Tests.Services
 
 			var result = await new PhotoService(this.client, this.mapper)
 				.GetAllPhotos();
-			result.Match(
+			result.Match<object>(
 				p =>
 				{
 					p.Should().HaveCount(1);
 					p.Single().Should().BeEquivalentTo(response);
-					return (object)null;
+					return default;
 				},
 				q =>
 				{
 					Assert.True(false);
-					return (object)null;
+					return default;
 				});
 			//result.Should().HaveCount(1);
 			//result.Single().Should().BeEquivalentTo(response);
@@ -78,16 +78,16 @@ namespace PhotoAlbum.Tests.Services
 
 			var result = await new PhotoService(this.client, this.mapper)
 				.GetAllPhotos();
-			result.Match(
+			result.Match<object>(
 				p =>
 				{
 					p.Should().BeEmpty();
-					return (object)null;
+					return default;
 				},
 				q =>
 				{
 					Assert.True(false);
-					return (object)null;
+					return default;
 				});
 			//result.Should().BeEmpty();
 		}
@@ -100,16 +100,16 @@ namespace PhotoAlbum.Tests.Services
 
 			var result = await new PhotoService(this.client, this.mapper)
 				.GetAllPhotos();
-			result.Match(
+			result.Match<object>(
 				p =>
 				{
 					p.Should().BeEmpty();
-					return (object)null;
+					return default;
 				},
 				q =>
 				{
 					Assert.True(false);
-					return (object)null;
+					return default;
 				});
 			//result.Should().BeEmpty();
 		}

@@ -12,7 +12,7 @@ namespace PhotoAlbum.Tests.Helpers
 			this.Configuration = new ExternalEndpoint
 			{
 				BaseAddress = new Uri("http://localhost:8443"),
-				Timeout = new TimeSpan(0, 0, 0, 2),
+				Timeout = new TimeSpan(0, 0, 2, 0),
 			};
 			this.Server = FluentMockServer.Start(
 				new FluentMockServerSettings

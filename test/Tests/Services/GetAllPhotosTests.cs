@@ -49,8 +49,20 @@ namespace PhotoAlbum.Tests.Services
 
 			var result = await new PhotoService(this.client, this.mapper)
 				.GetAllPhotos();
-			result.Should().HaveCount(1);
-			result.Single().Should().BeEquivalentTo(response);
+			result.Match(
+				p =>
+				{
+					p.Should().HaveCount(1);
+					p.Single().Should().BeEquivalentTo(response);
+					return (object)null;
+				},
+				q =>
+				{
+					Assert.True(false);
+					return (object)null;
+				});
+			//result.Should().HaveCount(1);
+			//result.Single().Should().BeEquivalentTo(response);
 		}
 
 		[Theory]
@@ -66,7 +78,18 @@ namespace PhotoAlbum.Tests.Services
 
 			var result = await new PhotoService(this.client, this.mapper)
 				.GetAllPhotos();
-			result.Should().BeEmpty();
+			result.Match(
+				p =>
+				{
+					p.Should().BeEmpty();
+					return (object)null;
+				},
+				q =>
+				{
+					Assert.True(false);
+					return (object)null;
+				});
+			//result.Should().BeEmpty();
 		}
 
 		[Fact]
@@ -77,7 +100,18 @@ namespace PhotoAlbum.Tests.Services
 
 			var result = await new PhotoService(this.client, this.mapper)
 				.GetAllPhotos();
-			result.Should().BeEmpty();
+			result.Match(
+				p =>
+				{
+					p.Should().BeEmpty();
+					return (object)null;
+				},
+				q =>
+				{
+					Assert.True(false);
+					return (object)null;
+				});
+			//result.Should().BeEmpty();
 		}
 
 		private static IMapper CreateMapper()

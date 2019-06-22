@@ -59,9 +59,8 @@ namespace PhotoAlbum.Tests.WebApi
 			var result = await this.client.GetAsync($"/v1/photos?userId={response.UserId}");
 
 			Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
-			var photos = await result.Content
-				.ReadAsAsync<List<PhotoAlbum.WebApi.Contracts.V1.Photo>>();
-			photos.Should().BeNull();
+			var message = await result.Content.ReadAsAsync<string>();
+			message.Should().NotBeNullOrEmpty();
 		}
 
 		[Theory]

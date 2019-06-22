@@ -42,17 +42,11 @@ namespace PhotoAlbum.Tests.ExternalHttpClients
 		[Fact]
 		public async Task ReturnsAlbumsByUserId()
 		{
-			var albums = await this.sut.GetAlbumsByUserId(1);
-			albums.OnSuccess(p =>
-			{
-				Assert.NotEmpty(p);
-				Assert.NotEqual(0, p[0].Id);
-				Assert.NotNull(p[0].Title);
-				return (System.Collections.Generic.List<PhotoAlbum.WebApi.ExternalResource.Models.Album>)null;
-			});
-			//Assert.NotEmpty(albums);
-			//Assert.NotEqual(0, albums[0].Id);
-			//Assert.NotNull(albums[0].Title);
+			var albums = (await this.sut.GetAlbumsByUserId(1)).SuccessToOption();
+			Assert.True(albums.HasValue);
+			Assert.NotEmpty(albums.Value);
+			Assert.NotEqual(0, albums.Value[0].Id);
+			Assert.NotNull(albums.Value[0].Title);
 		}
 
 		[Trait("TestCategory", "Integration")]

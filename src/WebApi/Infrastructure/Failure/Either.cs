@@ -17,55 +17,27 @@ namespace PhotoAlbum.WebApi.Infrastructure.Failure
 			T Match<T>(Func<TL, T> onLeft, Func<TR, T> onRight);
 		}
 
-		public static implicit operator Either<TL, TR>(TL item)
-		{
-			return CreateLeft(item);
-		}
+		public static implicit operator Either<TL, TR>(TL item) => CreateLeft(item);
 
-		public static implicit operator Either<TL, TR>(TR item)
-		{
-			return CreateRight(item);
-		}
+		public static implicit operator Either<TL, TR>(TR item) => CreateRight(item);
 
-		//public static Either<TL, TR> Success(TL value)
-		//{
-		//	return CreateLeft(value);
-		//}
+		//public static Either<TL, TR> Success(TL value) => CreateLeft(value);
 
-		//public static Either<TL, TR> Failure(TR value)
-		//{
-		//	return CreateRight(value);
-		//}
+		//public static Either<TL, TR> Failure(TR value) => CreateRight(value);
 
-		internal static Either<TL, TR> CreateLeft(TL value)
-		{
-			return new Either<TL, TR>(new Left(value));
-		}
+		public T Match<T>(Func<TL, T> onLeft, Func<TR, T> onRight) =>
+			this.imp.Match(onLeft, onRight);
 
-		internal static Either<TL, TR> CreateRight(TR value)
-		{
-			return new Either<TL, TR>(new Right(value));
-		}
+		internal static Either<TL, TR> CreateLeft(TL value) =>
+			new Either<TL, TR>(new Left(value));
 
-		public T Match<T>(Func<TL, T> onLeft, Func<TR, T> onRight)
-		{
-			return this.imp.Match(onLeft, onRight);
-		}
+		internal static Either<TL, TR> CreateRight(TR value) =>
+			new Either<TL, TR>(new Right(value));
 
-		public override bool Equals(object obj)
-		{
-			if (!(obj is Either<TL, TR> other))
-			{
-				return false;
-			}
+		public override bool Equals(object obj) =>
+			!(obj is Either<TL, TR> other) ? false : Equals(this.imp, other.imp);
 
-			return Equals(this.imp, other.imp);
-		}
-
-		public override int GetHashCode()
-		{
-			return this.imp.GetHashCode();
-		}
+		public override int GetHashCode() => this.imp.GetHashCode();
 
 		private sealed class Left : IEither
 		{
@@ -76,25 +48,13 @@ namespace PhotoAlbum.WebApi.Infrastructure.Failure
 				this.left = left;
 			}
 
-			public T Match<T>(Func<TL, T> onLeft, Func<TR, T> onRight)
-			{
-				return onLeft(this.left);
-			}
+			public T Match<T>(Func<TL, T> onLeft, Func<TR, T> onRight) =>
+				onLeft(this.left);
 
-			public override bool Equals(object obj)
-			{
-				if (!(obj is Left other))
-				{
-					return false;
-				}
+			public override bool Equals(object obj) =>
+				!(obj is Left other) ? false : Equals(this.left, other.left);
 
-				return Equals(this.left, other.left);
-			}
-
-			public override int GetHashCode()
-			{
-				return this.left.GetHashCode();
-			}
+			public override int GetHashCode() => this.left.GetHashCode();
 		}
 
 		private sealed class Right : IEither
@@ -106,25 +66,13 @@ namespace PhotoAlbum.WebApi.Infrastructure.Failure
 				this.right = right;
 			}
 
-			public T Match<T>(Func<TL, T> onLeft, Func<TR, T> onRight)
-			{
-				return onRight(this.right);
-			}
+			public T Match<T>(Func<TL, T> onLeft, Func<TR, T> onRight) =>
+				onRight(this.right);
 
-			public override bool Equals(object obj)
-			{
-				if (!(obj is Right other))
-				{
-					return false;
-				}
+			public override bool Equals(object obj) =>
+				!(obj is Right other) ? false : Equals(this.right, other.right);
 
-				return Equals(this.right, other.right);
-			}
-
-			public override int GetHashCode()
-			{
-				return this.right.GetHashCode();
-			}
+			public override int GetHashCode() => this.right.GetHashCode();
 		}
 	}
 

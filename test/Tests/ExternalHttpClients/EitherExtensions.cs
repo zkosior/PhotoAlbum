@@ -4,12 +4,10 @@ namespace PhotoAlbum.Tests.ExternalHttpClients
 
 	public static class EitherExtensions
 	{
-		public static Option<TSuccess> SuccessToOption<TSuccess, TFailure>
-			(this Either<TSuccess, TFailure> either)
-		{
-			return either.Match(
+		public static Option<TSuccess> SuccessToOption<TSuccess, TFailure>(
+			this Either<TSuccess, TFailure> either) =>
+			either.Match(
 				p => new Option<TSuccess>(p),
 				p => new Option<TSuccess>(default));
-		}
 	}
 }

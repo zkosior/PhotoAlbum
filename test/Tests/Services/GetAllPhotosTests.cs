@@ -49,14 +49,14 @@ namespace PhotoAlbum.Tests.Services
 			});
 
 			var result = (await new PhotoService(this.client, this.mapper)
-				.GetAllPhotos()).ToMaybe().Value;
+				.GetAllPhotos()).ToMaybe().GetValueOrFallback(default);
 			result.Should().HaveCount(1);
 			result.Single().Should().BeEquivalentTo(response);
 		}
 
 		[Theory]
 		[AutoData]
-		public async Task WhenExternalResultsDontMatch_ReturnsEmptyCollection(
+		public async Task WhenExternalResultsDoNotMatch_ReturnsEmptyCollection(
 			Album album,
 			Photo photo)
 		{
@@ -66,7 +66,7 @@ namespace PhotoAlbum.Tests.Services
 			this.client.GetPhotos().Returns(new List<Photo> { photo });
 
 			var result = (await new PhotoService(this.client, this.mapper)
-				.GetAllPhotos()).ToMaybe().Value;
+				.GetAllPhotos()).ToMaybe().GetValueOrFallback(default);
 			result.Should().BeEmpty();
 		}
 
@@ -77,7 +77,7 @@ namespace PhotoAlbum.Tests.Services
 			this.client.GetPhotos().Returns(new List<Photo>());
 
 			var result = (await new PhotoService(this.client, this.mapper)
-				.GetAllPhotos()).ToMaybe().Value;
+				.GetAllPhotos()).ToMaybe().GetValueOrFallback(default);
 			result.Should().BeEmpty();
 		}
 

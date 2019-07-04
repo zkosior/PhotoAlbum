@@ -4,6 +4,7 @@ namespace PhotoAlbum.WebApi.Services
 	using PhotoAlbum.WebApi.Contracts.V1;
 	using PhotoAlbum.WebApi.ExternalResource.HttpClients;
 	using PhotoAlbum.WebApi.Infrastructure.Failure;
+	using PhotoAlbum.WebApi.Infrastructure.Monads;
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;

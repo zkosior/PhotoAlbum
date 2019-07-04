@@ -1,17 +1,18 @@
 namespace PhotoAlbum.Tests.Services
 {
-	using AutoFixture.Xunit2;
-	using AutoMapper;
-	using FluentAssertions;
-	using NSubstitute;
-	using PhotoAlbum.WebApi.ExternalResource.HttpClients;
-	using PhotoAlbum.WebApi.ExternalResource.Models;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using AutoFixture.Xunit2;
+    using AutoMapper;
+    using FluentAssertions;
+    using NSubstitute;
+    using PhotoAlbum.WebApi.ExternalResource.HttpClients;
+    using PhotoAlbum.WebApi.ExternalResource.Models;
+	using PhotoAlbum.WebApi.Infrastructure.Monads;
 	using PhotoAlbum.WebApi.Mapping;
-	using PhotoAlbum.WebApi.Services;
-	using System.Collections.Generic;
-	using System.Linq;
-	using System.Threading.Tasks;
-	using Xunit;
+    using PhotoAlbum.WebApi.Services;
+    using Xunit;
 
 	[Trait("TestCategory", "Unit")]
 	public class GetAllPhotosTests
@@ -47,22 +48,10 @@ namespace PhotoAlbum.Tests.Services
 				}
 			});
 
-			var result = await new PhotoService(this.client, this.mapper)
-				.GetAllPhotos();
-			result.Match<object>(
-				p =>
-				{
-					p.Should().HaveCount(1);
-					p.Single().Should().BeEquivalentTo(response);
-					return default;
-				},
-				q =>
-				{
-					Assert.True(false);
-					return default;
-				});
-			//result.Should().HaveCount(1);
-			//result.Single().Should().BeEquivalentTo(response);
+			var result = (await new PhotoService(this.client, this.mapper)
+				.GetAllPhotos()).ToMaybe().Value;
+			result.Should().HaveCount(1);
+			result.Single().Should().BeEquivalentTo(response);
 		}
 
 		[Theory]
@@ -76,20 +65,9 @@ namespace PhotoAlbum.Tests.Services
 			this.client.GetAlbums().Returns(new List<Album> { album });
 			this.client.GetPhotos().Returns(new List<Photo> { photo });
 
-			var result = await new PhotoService(this.client, this.mapper)
-				.GetAllPhotos();
-			result.Match<object>(
-				p =>
-				{
-					p.Should().BeEmpty();
-					return default;
-				},
-				q =>
-				{
-					Assert.True(false);
-					return default;
-				});
-			//result.Should().BeEmpty();
+			var result = (await new PhotoService(this.client, this.mapper)
+				.GetAllPhotos()).ToMaybe().Value;
+			result.Should().BeEmpty();
 		}
 
 		[Fact]
@@ -98,20 +76,9 @@ namespace PhotoAlbum.Tests.Services
 			this.client.GetAlbums().Returns(new List<Album>());
 			this.client.GetPhotos().Returns(new List<Photo>());
 
-			var result = await new PhotoService(this.client, this.mapper)
-				.GetAllPhotos();
-			result.Match<object>(
-				p =>
-				{
-					p.Should().BeEmpty();
-					return default;
-				},
-				q =>
-				{
-					Assert.True(false);
-					return default;
-				});
-			//result.Should().BeEmpty();
+			var result = (await new PhotoService(this.client, this.mapper)
+				.GetAllPhotos()).ToMaybe().Value;
+			result.Should().BeEmpty();
 		}
 
 		private static IMapper CreateMapper()

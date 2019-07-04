@@ -2,6 +2,7 @@ namespace PhotoAlbum.WebApi.ExternalResource.HttpClients
 {
 	using PhotoAlbum.WebApi.ExternalResource.Models;
 	using PhotoAlbum.WebApi.Infrastructure.Failure;
+	using PhotoAlbum.WebApi.Infrastructure.Monads;
 	using System.Collections.Generic;
 	using System.Threading.Tasks;
 

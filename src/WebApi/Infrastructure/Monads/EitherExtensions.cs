@@ -41,9 +41,9 @@ namespace PhotoAlbum.WebApi.Infrastructure.Monads
 				f,
 				x => Task.FromResult(Either<T, TR>.CreateRight(x)));
 
-		public static Maybe<TSuccess> ToMaybe<TSuccess, TFailure>(
-			this Either<TSuccess, TFailure> either) => either.Match(
-			p => new Maybe<TSuccess>(p),
-			p => new Maybe<TSuccess>(default));
+		public static Maybe<TL> ToMaybe<TL, TR>(
+			this Either<TL, TR> either) => either.Match(
+			p => new Maybe<TL>(p),
+			p => new Maybe<TL>(default));
 	}
 }
